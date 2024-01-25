@@ -1,0 +1,188 @@
+﻿@page "/"
+@using NewsOnThisDate.Shared.DTO
+@inject HttpClient httpClient
+<PageTitle>On This Date</PageTitle>
+
+<MudGrid Justify="Justify.SpaceEvenly">
+    <MudItem xs="12" lg="3" Class="order-2 order-sm-2 order-md-2 order-lg-1">
+        <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Deaths">
+                @if (items.Deaths != null && items.Deaths.Any())
+                {
+                    @foreach (var item in deathCurrentItems)
+                    {
+                        if (item.Pages != null)
+                        {
+                            var pageItem = item.Pages.FirstOrDefault();
+                            <div class="d-flex align-items-center pa-2">
+
+                                @if (pageItem.Thumbnail != null)
+                                {
+                                    <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Top" Width="50" Height="50" src="@pageItem.Thumbnail.Source" />
+                                }
+                                @* else
+                                {
+                                    <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" Width="50" Height="50" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Portrait_Placeholder.png/50px-Portrait_Placeholder.png" />
+                                } *@
+
+                                <a style="width: 85%;" href="@pageItem.Content_urls.Desktop.Page" class="ml-2">
+                                    @{
+                                        var name = item.Text.Split(',')[0];
+                                        var function = item.Text.Split(',')[1];
+                                    }
+
+                                    <MudText Style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">@name</MudText>
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};text-overflow: ellipsis; white-space: nowrap;overflow: hidden;")">@function</MudText>
+                                    </a>
+                                </div>
+
+                            <MudDivider />
+                        }
+                    }
+
+                    <MudPagination Count="deathTotalPages" MiddleCount="1" Selected="deathCurrentPage" SelectedChanged="(value) => DeathOnPageChanged(value)" />
+                }
+            </MudTabPanel>
+            <MudTabPanel Text="Births">
+                @if (items.Births != null && items.Births.Any())
+                {
+                    @foreach (var item in birthCurrentItems)
+                    {
+                        if (item.Pages != null)
+                        {
+                            var pageItem = item.Pages.FirstOrDefault();
+                            <div class="d-flex align-items-center pa-2">
+                                   
+                                    @if (pageItem.Thumbnail != null)
+                                    {
+                                    <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Top" Width="50" Height="50" src="@pageItem.Thumbnail.Source" />
+                                    }
+                                    @* else
+                                    {
+                                        <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" Width="50" Height="50" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Portrait_Placeholder.png/50px-Portrait_Placeholder.png" />
+                                    } *@
+
+                                <a style="width: 85%;" href="@pageItem.Content_urls.Desktop.Page" class="ml-2">
+                                        @{
+                                            var name = item.Text.Split(',')[0];
+                                            var function = item.Text.Split(',')[1];
+                                        }
+
+                                    <MudText Style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">@name</MudText>
+                                        <MudText Style="@($"color:{Colors.Grey.Darken1};text-overflow: ellipsis; white-space: nowrap;overflow: hidden;")">@function</MudText>
+                                    </a>
+                            </div>
+
+                            <MudDivider />
+                        }
+                    }
+
+                    <MudPagination Count="birthTotalPages" MiddleCount="1" Selected="birthCurrentPage" SelectedChanged="(value) => BirthOnPageChanged(value)" />
+                }
+            </MudTabPanel>
+
+
+        </MudTabs>
+    </MudItem>
+    <MudItem xs="12" lg="6" Class="order-1 order-sm-1 order-md-1 order-lg-2">
+        <MudPaper Class="pa-6">
+            <MudText Typo="Typo.h5">Today is</MudText>
+            <MudText Typo="Typo.h2">@DateTime.Now.ToString("MMMM dd"), on this day..</MudText>
+
+            <MudTimeline TimelinePosition="TimelinePosition.Start">
+                @if (items.Selected != null)
+                {
+                    @foreach (var item in items.Selected)
+                    {
+                        <MudTimelineItem>
+                            <ItemContent>
+                                <MudCard>
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6" Color="Color.Primary">@item.Year</MudText>
+                                            <MudText>@item.Text</MudText>
+                                            <ul class="d-flex align-stretch overflow-auto" style="height: 60px">
+                                                @if (item.Pages != null)
+                                            {
+                                                @foreach (var pageItem in item.Pages)
+                                                {
+                                                    <li>
+                                                        <a class="pointer-events-auto" href="@pageItem.Content_urls.Desktop.Page">
+                                                            <MudPaper Class="d-flex align-center pa-2 mr-3 overflow-hidden" Style="white-space: nowrap; height: 49px">
+                                                                <MudText Class="pr-2">@pageItem.Normalizedtitle</MudText>
+                                                                    @if (pageItem.Thumbnail != null)
+                                                                    {
+                                                                        <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" Width="33" Height="33" src="@pageItem.Thumbnail.Source" />
+                                                                    }
+
+                                                            </MudPaper>
+                                                        </a>
+                                                    </li>
+                                                }
+                                            }
+                                        </ul>
+                                    </MudCardContent>
+                                </MudCard>
+                            </ItemContent>
+                        </MudTimelineItem>
+                    }
+                }
+            </MudTimeline>
+        </MudPaper>
+    </MudItem>
+    <MudItem Class="order-3 order-sm-3 order-md-3 order-lg-3" xs="12" lg="3">
+        <MudPaper Class="pa-6">
+            <h2>Holidays</h2>
+            @if (items.Holidays != null)
+            {
+                foreach (var item in items.Holidays)
+                {
+                    <MudText>@item.Text</MudText>
+                    <MudDivider />
+                }
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private WikiDTO items = new WikiDTO();
+
+    int birthCurrentPage = 1;
+    int birthTotalPages;
+    List<Birth> birthCurrentItems;
+    int birthTotalItems;
+
+    int deathCurrentPage = 1;
+    int deathTotalPages;
+    List<Death> deathCurrentItems;
+    int deathTotalItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var http = new HttpClient();
+        items = await http.GetFromJsonAsync<WikiDTO>("http://localhost:5078/api/WikiData");
+        birthTotalItems = items.Births.Count;
+        deathTotalItems = items.Deaths.Count;
+        deathTotalPages = (int)Math.Ceiling((double)deathTotalItems / 10);
+        birthTotalPages = (int)Math.Ceiling((double)birthTotalItems / 10);
+        BirthOnPageChanged(birthCurrentPage);
+        DeathOnPageChanged(deathCurrentPage);
+    }
+
+    private void BirthOnPageChanged(int page)
+    {
+        birthCurrentPage = page;
+        birthCurrentItems = items.Births.Skip((birthCurrentPage - 1) * 10).Take(10).ToList();
+
+    }
+
+    private void DeathOnPageChanged(int page)
+    {
+        deathCurrentPage = page;
+        deathCurrentItems = items.Deaths.Skip((deathCurrentPage - 1) * 10).Take(10).ToList();
+
+    }
+}
+
+
+
