@@ -20,10 +20,10 @@
                                 {
                                     <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Top" Width="50" Height="50" src="@pageItem.Thumbnail.Source" />
                                 }
-                                @* else
+                                else
                                 {
                                     <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" Width="50" Height="50" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Portrait_Placeholder.png/50px-Portrait_Placeholder.png" />
-                                } *@
+                                }
 
                                 <a style="width: 85%;" href="@pageItem.Content_urls.Desktop.Page" class="ml-2">
                                     @{
@@ -57,10 +57,10 @@
                                     {
                                     <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Top" Width="50" Height="50" src="@pageItem.Thumbnail.Source" />
                                     }
-                                    @* else
+                                    else
                                     {
                                         <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" Width="50" Height="50" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Portrait_Placeholder.png/50px-Portrait_Placeholder.png" />
-                                    } *@
+                                    }
 
                                 <a style="width: 85%;" href="@pageItem.Content_urls.Desktop.Page" class="ml-2">
                                         @{
@@ -136,13 +136,29 @@
             {
                 foreach (var item in items.Holidays)
                 {
-                    <MudText>@item.Text</MudText>
-                    <MudDivider />
-                }
+                        if (item.Pages != null)
+                        {
+                            var pageItem = item.Pages.FirstOrDefault();
+                            <div class="d-flex align-items-center pa-2">
+
+                                @if (pageItem.Thumbnail != null)
+                                {
+                                    <MudImage class="rounded-lg" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Top" Width="50" Height="50" src="@pageItem.Thumbnail.Source" />
+                                }
+                                    <a style="width: 85%;" href="@pageItem.Content_urls.Desktop.Page" class="ml-2">
+                                    <MudText Style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">@item.Text</MudText>
+                                    <MudText Style="@($"color:{Colors.Grey.Darken1};text-overflow: ellipsis; white-space: nowrap;overflow: hidden;")">@pageItem.Description</MudText>
+                                    </a>
+                            </div>
+
+                            <MudDivider />
+                        }
+                    }
             }
         </MudPaper>
     </MudItem>
 </MudGrid>
+
 
 @code {
     private WikiDTO items = new WikiDTO();
