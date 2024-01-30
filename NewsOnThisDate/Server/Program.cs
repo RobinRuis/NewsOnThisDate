@@ -11,15 +11,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddMudServices();
 
 
-builder.Services.AddHttpClient("NewsOnThisDate.ServerAPI", client => client.BaseAddress = new Uri("https://localhost:7123"));
+builder.Services.AddHttpClient("NewsOnThisDate.ServerAPI", client => client.BaseAddress = new Uri("https://newsonthisdate.azurewebsites.net"));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:5078",
-                                              "https://localhost:7123");
+                          policy.WithOrigins("https://newsonthisdateserver.azurewebsites.net/",
+                                              "https://newsonthisdate.azurewebsites.net");
                       });
 });
 
